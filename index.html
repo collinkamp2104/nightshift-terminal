@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>NIGHTSHIFT TERMINAL</title>
+<style>
+:root { --bg:#050505; --card:#121212; --green:#00ff9d; --red:#ff4d4d; --muted:#888; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { background:var(--bg); color:#fff; font-family:-apple-system,system-ui,sans-serif; padding-bottom:80px; }
+.header { display:flex; justify-content:space-between; align-items:center; padding:16px; }
+.logo { font-size:20px; font-weight:800; }
+.logo span { color:var(--green); }
+.badge { background:#1a3a2a; color:var(--green); padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700; }
+.balance { text-align:center; padding:20px 16px; }
+.balance .num { font-size:48px; font-weight:800; }
+.pnl { color:var(--green); font-size:18px; font-weight:700; margin-top:4px; }
+.chart { height:140px; margin:0 16px; background:linear-gradient(180deg,rgba(0,255,157,.15),transparent); border-radius:12px; position:relative; }
+.chart-line { position:absolute; bottom:40%; left:0; right:0; height:3px; background:var(--green); box-shadow:0 0 15px var(--green); }
+.tabs { display:flex; gap:6px; padding:16px; overflow-x:auto; }
+.tab { background:#1a1a1a; border:none; color:#888; padding:8px 14px; border-radius:20px; font-weight:600; }
+.tab.active { background:#1a3a2a; color:var(--green); }
+.card { background:#121212; border-radius:16px; margin:0 16px 10px; padding:14px; }
+.token-row { display:flex; align-items:center; padding:10px 0; border-bottom:1px solid #222; }
+.token-row:last-child { border-bottom:none; }
+.icon { width:36px; height:36px; border-radius:18px; background:#333; margin-right:10px; display:flex; align-items:center; justify-content:center; font-weight:700; }
+.bottom-nav { position:fixed; bottom:0; left:0; right:0; background:#111; display:flex; justify-content:space-around; padding:12px 0 28px; font-size:11px; color:#888; }
+.bottom-nav .active { color:var(--green); }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">NIGHTSHIFT <span>TERMINAL</span></div>
+  <div class="badge">PAPER</div>
+</div>
+<div class="balance">
+  <div class="num">100.00 €</div>
+  <div class="pnl">+0.00 € (0.0%)</div>
+</div>
+<div class="chart"><div class="chart-line"></div></div>
+<div class="tabs">
+  <button class="tab active">Portfolio</button>
+  <button class="tab">Scanner</button>
+  <button class="tab">Agents</button>
+  <button class="tab">Activity</button>
+</div>
+<div class="card">
+  <div style="color:#888;font-size:13px;margin-bottom:8px;">BEOBACHTET</div>
+  <div class="token-row"><div class="icon">D</div><div><b>DESSA</b><br><span style="color:#888;font-size:12px;">PASS · Zone</span></div></div>
+  <div class="token-row"><div class="icon">A</div><div><b>Apple Coin</b><br><span style="color:#888;font-size:12px;">CAUTION</span></div></div>
+  <div class="token-row"><div class="icon">L</div><div><b>Leverhedge</b><br><span style="color:#888;font-size:12px;">CAUTION</span></div></div>
+</div>
+<div class="card"><div style="text-align:center;color:#888;padding:20px;">Keine offenen Positionen</div></div>
+<div class="bottom-nav">
+  <div class="active">Home</div>
+  <div>Agents</div>
+  <div>Activity</div>
+  <div>Wallet</div>
+</div>
+</body>
+</html>
