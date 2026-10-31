@@ -5,27 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NIGHTSHIFT TERMINAL</title>
 <style>
-:root { --bg:#050505; --card:#121212; --green:#00ff9d; --red:#ff4d4d; --muted:#888; }
+:root { --bg:#050505; --card:#121212; --green:#00ff9d; --red:#ff4d4d; --orange:#ff9f0a; --muted:#888; }
 * { box-sizing:border-box; margin:0; padding:0; }
 body { background:var(--bg); color:#fff; font-family:-apple-system,system-ui,sans-serif; padding-bottom:80px; }
 .header { display:flex; justify-content:space-between; align-items:center; padding:16px; }
 .logo { font-size:20px; font-weight:800; }
 .logo span { color:var(--green); }
 .badge { background:#1a3a2a; color:var(--green); padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700; }
-.balance { text-align:center; padding:20px 16px; }
-.balance .num { font-size:48px; font-weight:800; }
-.pnl { color:var(--green); font-size:18px; font-weight:700; margin-top:4px; }
-.chart { height:140px; margin:0 16px; background:linear-gradient(180deg,rgba(0,255,157,.15),transparent); border-radius:12px; position:relative; }
-.chart-line { position:absolute; bottom:40%; left:0; right:0; height:3px; background:var(--green); box-shadow:0 0 15px var(--green); }
-.tabs { display:flex; gap:6px; padding:16px; overflow-x:auto; }
-.tab { background:#1a1a1a; border:none; color:#888; padding:8px 14px; border-radius:20px; font-weight:600; }
-.tab.active { background:#1a3a2a; color:var(--green); }
-.card { background:#121212; border-radius:16px; margin:0 16px 10px; padding:14px; }
-.token-row { display:flex; align-items:center; padding:10px 0; border-bottom:1px solid #222; }
+.balance { text-align:center; padding:16px; }
+.balance .num { font-size:44px; font-weight:800; }
+.pnl { color:var(--green); font-size:16px; font-weight:700; }
+.section { padding:0 16px 12px; }
+.section-title { font-size:13px; color:var(--muted); font-weight:600; text-transform:uppercase; margin-bottom:8px; }
+.card { background:#121212; border-radius:16px; padding:12px; margin-bottom:10px; }
+.agent-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #222; font-size:14px; }
+.agent-row:last-child { border-bottom:none; }
+.token-row { display:flex; align-items:center; padding:12px 0; border-bottom:1px solid #222; cursor:pointer; }
 .token-row:last-child { border-bottom:none; }
-.icon { width:36px; height:36px; border-radius:18px; background:#333; margin-right:10px; display:flex; align-items:center; justify-content:center; font-weight:700; }
+.icon { width:40px; height:40px; border-radius:20px; background:#222; margin-right:12px; object-fit:cover; }
+.token-info { flex:1; }
+.token-name { font-weight:700; }
+.token-meta { font-size:12px; color:var(--muted); }
+.status { font-size:12px; font-weight:700; }
+.status-pass { color:var(--green); }
+.status-caution { color:var(--orange); }
+.status-reject { color:var(--red); }
 .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:#111; display:flex; justify-content:space-around; padding:12px 0 28px; font-size:11px; color:#888; }
 .bottom-nav .active { color:var(--green); }
+.modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:100; align-items:center; justify-content:center; }
+.modal.open { display:flex; }
+.modal-content { background:#1a1a1a; border-radius:16px; padding:20px; width:90%; max-width:400px; }
 </style>
 </head>
 <body>
@@ -35,27 +44,75 @@ body { background:var(--bg); color:#fff; font-family:-apple-system,system-ui,san
 </div>
 <div class="balance">
   <div class="num">100.00 €</div>
-  <div class="pnl">+0.00 € (0.0%)</div>
+  <div class="pnl">+0.00 € · 0 Positionen</div>
 </div>
-<div class="chart"><div class="chart-line"></div></div>
-<div class="tabs">
-  <button class="tab active">Portfolio</button>
-  <button class="tab">Scanner</button>
-  <button class="tab">Agents</button>
-  <button class="tab">Activity</button>
+
+<div class="section">
+  <div class="section-title">Agenten aktiv</div>
+  <div class="card">
+    <div class="agent-row"><span>SCOUT</span><span style="color:var(--green)">scanning</span></div>
+    <div class="agent-row"><span>TREND</span><span>monitoring X</span></div>
+    <div class="agent-row"><span>SECURITY</span><span>checking</span></div>
+    <div class="agent-row"><span>QUANT</span><span>watching zones</span></div>
+    <div class="agent-row"><span>EXECUTOR</span><span>ready</span></div>
+    <div class="agent-row"><span>CHIEF</span><span>coordinating</span></div>
+  </div>
 </div>
-<div class="card">
-  <div style="color:#888;font-size:13px;margin-bottom:8px;">BEOBACHTET</div>
-  <div class="token-row"><div class="icon">D</div><div><b>DESSA</b><br><span style="color:#888;font-size:12px;">PASS · Zone</span></div></div>
-  <div class="token-row"><div class="icon">A</div><div><b>Apple Coin</b><br><span style="color:#888;font-size:12px;">CAUTION</span></div></div>
-  <div class="token-row"><div class="icon">L</div><div><b>Leverhedge</b><br><span style="color:#888;font-size:12px;">CAUTION</span></div></div>
+
+<div class="section">
+  <div class="section-title">Kandidaten (klicken für Chart)</div>
+  <div class="card" id="coins"></div>
 </div>
-<div class="card"><div style="text-align:center;color:#888;padding:20px;">Keine offenen Positionen</div></div>
+
+<div class="section">
+  <div class="section-title">Letzte Aktivität</div>
+  <div class="card" style="font-size:13px;color:#aaa;">
+    DESSA PASS, wartet auf Zone<br>
+    Apple / Leverhedge CAUTION<br>
+    TUSK abgelehnt (Liquidität + Hype)<br>
+    Kein Kauf bisher
+  </div>
+</div>
+
 <div class="bottom-nav">
   <div class="active">Home</div>
   <div>Agents</div>
   <div>Activity</div>
   <div>Wallet</div>
 </div>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h3 id="modal-title"></h3>
+    <p id="modal-info" style="color:#aaa;margin:8px 0;"></p>
+    <a id="modal-link" href="#" target="_blank" style="color:var(--green);">Chart auf DexScreener öffnen</a>
+    <button onclick="document.getElementById('modal').classList.remove('open')" style="margin-top:16px;background:#333;color:#fff;border:none;padding:10px 16px;border-radius:10px;width:100%;">Schließen</button>
+  </div>
+</div>
+
+<script>
+const coins = [
+  { name: "DESSA", mint: "npz2FhoufQ7pKqhGpaipYWacrAkidyW2yDpVWSvpump", status: "PASS · Zone", cls: "status-pass", chart: "https://dexscreener.com/solana/npz2FhoufQ7pKqhGpaipYWacrAkidyW2yDpVWSvpump" },
+  { name: "Apple Coin", mint: "6nJVg7wV1UBaWBpHuP7pEHLBd26U4cj6vXnGShobpump", status: "CAUTION", cls: "status-caution", chart: "https://dexscreener.com/solana/6nJVg7wV1UBaWBpHuP7pEHLBd26U4cj6vXnGShobpump" },
+  { name: "Leverhedge", mint: "FWatMYieKhRuJ1yuTcmVG1njRhZWwqHwjR11pBympump", status: "CAUTION", cls: "status-caution", chart: "https://dexscreener.com/solana/FWatMYieKhRuJ1yuTcmVG1njRhZWwqHwjR11pBympump" }
+];
+
+document.getElementById("coins").innerHTML = coins.map(c => `
+  <div class="token-row" onclick="openCoin('${c.name}','${c.mint}','${c.status}','${c.chart}')">
+    <div class="icon">${c.name[0]}</div>
+    <div class="token-info">
+      <div class="token-name">${c.name}</div>
+      <div class="token-meta">${c.mint.slice(0,10)}…</div>
+    </div>
+    <div class="status ${c.cls}">${c.status}</div>
+  </div>`).join("");
+
+function openCoin(name, mint, status, chart) {
+  document.getElementById("modal-title").textContent = name;
+  document.getElementById("modal-info").textContent = status + " \u00b7 " + mint;
+  document.getElementById("modal-link").href = chart;
+  document.getElementById("modal").classList.add("open");
+}
+</script>
 </body>
 </html>
